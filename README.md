@@ -211,7 +211,7 @@ GET /api/v1/menus/popular
 
 ## 6. ERD
 
-```mermaid
+
 erDiagram
     APP_USER ||--|| POINT_ACCOUNT : "포인트 계좌 보유"
     APP_USER ||--o{ POINT_TRANSACTION : "포인트 거래 발생"
@@ -272,7 +272,7 @@ erDiagram
         DATETIME created_at
         DATETIME sent_at
     }
-```
+
 
 관계 표기:
 
