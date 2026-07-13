@@ -234,6 +234,8 @@ GET /api/v1/menus/popular
 
 
 
+  ```mermaid
+erDiagram
     APP_USER ||--|| POINT_ACCOUNT : "포인트 계좌 보유"
     APP_USER ||--o{ POINT_TRANSACTION : "포인트 거래 발생"
     APP_USER ||--o{ COFFEE_ORDER : "주문 생성"
@@ -293,6 +295,7 @@ GET /api/v1/menus/popular
         DATETIME created_at
         DATETIME sent_at
     }
+```
 
 
 관계 표기:
