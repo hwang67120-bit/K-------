@@ -32,4 +32,8 @@ public class PointAccount extends BaseTimeEntity {
         this.userId = userId;
         this.balance = balance;
     }
+
+    public void addPoint(long amount) {
+        this.balance = Math.addExact(this.balance, amount);
+    }
 }
