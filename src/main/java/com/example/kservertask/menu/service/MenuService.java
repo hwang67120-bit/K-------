@@ -32,6 +32,18 @@ public class MenuService {
     private final MenuCategoryRepository menuCategoryRepository;
     private final MenuOptionRepository menuOptionRepository;
 
+    /**
+     * 기능: 전체 메뉴를 카테고리 표시 순서와 메뉴 ID 순서로 조회한다.
+     *
+     * 파라미터:
+     * - 없음
+     *
+     * 요청값:
+     * - 없음
+     *
+     * 응답값:
+     * - List<MenuResult>: 메뉴 ID, 카테고리 ID, 카테고리명, 메뉴명, 가격
+     */
     public List<MenuResult> getMenus() {
         List<Menu> menus = menuRepository.findAll();
 
@@ -54,6 +66,18 @@ public class MenuService {
                 .toList();
     }
 
+    /**
+     * 기능: 메뉴 ID로 메뉴 상세 정보와 옵션을 조회한다.
+     *
+     * 파라미터:
+     * - menuId: 조회할 메뉴 ID
+     *
+     * 요청값:
+     * - menuId: 메뉴를 식별하는 값
+     *
+     * 응답값:
+     * - MenuDetailResult: 메뉴 ID, 카테고리 정보, 메뉴명, 가격, 옵션 목록
+     */
     public MenuDetailResult getMenu(Long menuId) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MENU_NOT_FOUND));
@@ -75,6 +99,19 @@ public class MenuService {
         );
     }
 
+    /**
+     * 기능: 메뉴에 연결된 카테고리를 조회한다. (내부 처리)
+     *
+     * 파라미터:
+     * - categories: 카테고리 ID와 카테고리 정보의 목록
+     * - menu: 카테고리 ID를 가진 메뉴
+     *
+     * 요청값:
+     * - categoryId: 메뉴에 저장된 카테고리 식별값
+     *
+     * 응답값:
+     * - MenuCategory: 메뉴에 연결된 카테고리 정보
+     */
     private MenuCategory getCategory(Map<Long, MenuCategory> categories, Menu menu) {
         MenuCategory category = categories.get(menu.getCategoryId());
 
@@ -85,6 +122,19 @@ public class MenuService {
         return category;
     }
 
+    /**
+     * 기능: 메뉴와 카테고리 정보를 메뉴 목록 응답으로 변환한다. (내부 처리)
+     *
+     * 파라미터:
+     * - menu: 메뉴 엔티티
+     * - category: 메뉴에 연결된 카테고리 엔티티
+     *
+     * 요청값:
+     * - menuId, categoryId, name, price: 응답으로 변환할 메뉴 정보
+     *
+     * 응답값:
+     * - MenuResult: 메뉴 목록용 응답 정보
+     */
     private MenuResult toResult(Menu menu, MenuCategory category) {
         return new MenuResult(
                 menu.getMenuId(),
@@ -95,6 +145,18 @@ public class MenuService {
         );
     }
 
+    /**
+     * 기능: 메뉴 옵션 엔티티를 옵션 응답으로 변환한다. (내부 처리)
+     *
+     * 파라미터:
+     * - option: 메뉴 옵션 엔티티
+     *
+     * 요청값:
+     * - optionId, size, temperature, beanType, additionalPrice, syrupAvailable: 옵션 정보
+     *
+     * 응답값:
+     * - MenuOptionResult: 메뉴 상세 조회용 옵션 정보
+     */
     private MenuOptionResult toOptionResult(MenuOption option) {
         return new MenuOptionResult(
                 option.getOptionId(),
