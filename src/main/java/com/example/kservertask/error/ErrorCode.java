@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     PAYMENT_REJECTED(HttpStatus.CONFLICT, "결제가 거부되었습니다."),
+    PAYMENT_CONNECTION_FAILED(HttpStatus.SERVICE_UNAVAILABLE, "인터넷 연결이 끊겼습니다."),
     ORDER_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "주문에 실패했습니다."),
     DUPLICATE_REQUEST(HttpStatus.CONFLICT, "중복된 요청입니다."),
     POINT_CHARGE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "충전에 실패했습니다."),
