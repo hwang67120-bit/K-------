@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PointChargeService {
 
+    private static final int MAX_PAYMENT_RETRY = 3;
+
     private final AppUserRepository appUserRepository;
     private final PointChargeRepository pointChargeRepository;
     private final PointAccountRepository pointAccountRepository;
@@ -63,7 +65,7 @@ public class PointChargeService {
                 .filter(appUser -> Objects.equals(appUser.getPhoneNumber(), request.phoneNumber()))
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_INFORMATION_MISMATCH));
 
-        PaymentVerificationResponse payment = mockPaymentClient.verifyPayment(request.paymentId());
+        PaymentVerificationResponse payment = verifyPaymentWithRetry(request.paymentId());
 
         if (!payment.completed()) {
             throw new BusinessException(ErrorCode.PAYMENT_REJECTED);
@@ -178,6 +180,33 @@ public class PointChargeService {
      * 응답값:
      * - userId: 충전한 사용자 ID
      */
+    /**
+     * 기능: 결제 검증 연결을 재시도한다. (내부 처리)
+     *
+     * 파라미터:
+     * - paymentId: 결제 식별값
+     *
+     * 요청값:
+     * - paymentId: 결제 서버에 검증을 요청할 값
+     *
+     * 응답값:
+     * - PaymentVerificationResponse: 결제 검증 결과
+     * - 3회 모두 실패하면 인터넷 연결 예외를 발생시킨다.
+     */
+    private PaymentVerificationResponse verifyPaymentWithRetry(String paymentId) {
+        for (int attempt = 1; attempt <= MAX_PAYMENT_RETRY; attempt++) {
+            try {
+                return mockPaymentClient.verifyPayment(paymentId);
+            } catch (RuntimeException exception) {
+                if (attempt == MAX_PAYMENT_RETRY) {
+                    throw new BusinessException(ErrorCode.PAYMENT_CONNECTION_FAILED);
+                }
+            }
+        }
+
+        throw new BusinessException(ErrorCode.PAYMENT_CONNECTION_FAILED);
+    }
+
     private PointChargeResponse proceedCharge(
             AppUser user,
             PointCharge pointCharge,
